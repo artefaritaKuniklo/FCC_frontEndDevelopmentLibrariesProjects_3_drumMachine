@@ -9,7 +9,7 @@ function App() {
     power: false,
     bank: "Heater Kit",
     screen: "",
-    vol: window.localStorage.getItem("volLocal")|20,
+    vol: window.localStorage.getItem("volLocal") | 20,
     lastKey: "",
   });
 
@@ -20,8 +20,9 @@ function App() {
     };
   });
   const handleKeyPress = (e) => {
-    if ((e.key >= 1) & (e.key <= 9)) {
-      playMusic(e.key);
+    console.log(e.key);
+    if (keyArr.indexOf(e.key.toUpperCase()) !== -1) {
+      playMusic(e.key.toUpperCase(), keyArr.indexOf(e.key.toUpperCase()));
     } else {
       switch (e.key) {
         case "p":
@@ -70,25 +71,26 @@ function App() {
       }
     }
   };
-  const playMusic = (sourceId) => {
+  const playMusic = (sourceId, ind) => {
     if (panel.power) {
-      let audioDOM = document.getElementById(panel.bank + sourceId);
+      console.log(panel.bank.replace(" ", "-") + sourceId);
+      let audioDOM = document.getElementsByClassName(
+        panel.bank.replace(" ", "-") + sourceId
+      )[0];
       audioDOM.volume = panel.vol / 100;
       audioDOM.play();
       setPanel(
         Object.assign({}, panel, {
           lastKey: sourceId,
           screen:
-            panel.bank == "Heater Kit"
-              ? bankOne[sourceId - 1].id
-              : bankTwo[sourceId - 1].id,
+            panel.bank == "Heater Kit" ? bankOne[ind].id : bankTwo[ind].id,
         })
       );
     }
   };
-  const keyArr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const keyArr = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
   return (
-    <div className="App">
+    <div className="App" id="drum-machine">
       <div id="main-frame">
         <div id="title-frame">
           <h2>A Useless Drum Machine</h2>
@@ -144,7 +146,7 @@ function App() {
             <div>[B]ank</div>
           </div>
           <div className="btn-group">
-            <div id="screen">{panel.power ? panel.screen : "OFF"}</div>
+            <div id="display">{panel.power ? panel.screen : "OFF"}</div>
             <div>State</div>
           </div>
           <div className="btn-group">
@@ -171,25 +173,28 @@ function App() {
         <div id="keys-container">
           {keyArr.map((it, ind) => (
             <button
-              className="drumKeys"
+              className="drum-pad"
+              id="drum pad"
               key={it}
               onClick={() => {
-                playMusic(it);
+                playMusic(it, ind);
               }}
             >
               <div
                 className="led"
                 style={panel.lastKey == it ? { backgroundColor: "red" } : {}}
               ></div>
+              {it}
               <audio
-                className="audioSrc"
+                // className="audioSrc"
+                id={it}
                 src={bankOne[ind].url}
-                id={"Heater Kit" + it}
+                className={"Heater-Kit" + it + " clip"}
               />
               <audio
-                className="audioSrc"
+                // className="audioSrc"
                 src={bankTwo[ind].url}
-                id={"Piano Kit" + it}
+                className={"Piano-Kit" + it}
               />
             </button>
           ))}
